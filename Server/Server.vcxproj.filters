@@ -19,9 +19,6 @@
     <Filter Include="Source Files\exceptions">
       <UniqueIdentifier>{8092c2af-51af-47c2-bffd-468d9ec5491b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Objects">
-      <UniqueIdentifier>{35dd23ec-630c-42ee-9503-bdef5ffba64b}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -35,10 +32,8 @@
     <ClInclude Include="InvalidConnectionState.h">
       <Filter>Source Files\exceptions</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="ServerSocket.h">
-      <Filter>Source Files\Objects</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
