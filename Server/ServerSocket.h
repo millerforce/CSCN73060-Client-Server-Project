@@ -1,5 +1,6 @@
+#pragma once
 
-#include <winsock2.h>
+#include <WinSock2.h>
 
 class ServerSocket {
 private:

@@ -130,6 +130,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ClientConnection.h" />
     <ClInclude Include="InvalidConnectionState.h" />
     <ClInclude Include="InvalidConnectionType.h" />
   </ItemGroup>
