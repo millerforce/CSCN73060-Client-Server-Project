@@ -19,10 +19,22 @@
     <Filter Include="Source Files\exceptions">
       <UniqueIdentifier>{8234cdb3-87e3-4391-8737-2271bf2e3c91}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\file">
+      <UniqueIdentifier>{539dc59c-5c7d-4b5d-8d5a-4d795b2a7167}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\uuid">
+      <UniqueIdentifier>{a5575ef2-54fc-43ac-804d-2861c4df8f4a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="file_io.cpp">
+      <Filter>Source Files\file</Filter>
+    </ClCompile>
+    <ClCompile Include="UUID.cpp">
+      <Filter>Source Files\uuid</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -31,6 +43,15 @@
     </ClInclude>
     <ClInclude Include="InvalidConnectionType.h">
       <Filter>Source Files\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="file_io.h">
+      <Filter>Source Files\file</Filter>
+    </ClInclude>
+    <ClInclude Include="FIleNotFound.h">
+      <Filter>Source Files\file</Filter>
+    </ClInclude>
+    <ClInclude Include="UUID.h">
+      <Filter>Source Files\uuid</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
