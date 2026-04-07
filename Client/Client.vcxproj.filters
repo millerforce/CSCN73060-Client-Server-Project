@@ -47,7 +47,7 @@
     <ClInclude Include="file_io.h">
       <Filter>Source Files\file</Filter>
     </ClInclude>
-    <ClInclude Include="FIleNotFound.h">
+    <ClInclude Include="FileNotFound.h">
       <Filter>Source Files\file</Filter>
     </ClInclude>
     <ClInclude Include="UUID.h">
