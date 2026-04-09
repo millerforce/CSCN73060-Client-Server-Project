@@ -48,6 +48,9 @@
     <ClInclude Include="UUID.h">
       <Filter>Header Files\uuid</Filter>
     </ClInclude>
+    <ClInclude Include="PacketHandler.h">
+      <Filter>Header Files\packet</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientSocket.cpp">

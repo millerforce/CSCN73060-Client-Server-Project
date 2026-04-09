@@ -23,6 +23,7 @@
     <ClInclude Include="InvalidConnectionState.h" />
     <ClInclude Include="InvalidConnectionType.h" />
     <ClInclude Include="Packet.h" />
+    <ClInclude Include="PacketHandler.h" />
     <ClInclude Include="UUID.h" />
   </ItemGroup>
   <ItemGroup>
