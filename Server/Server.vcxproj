@@ -130,6 +130,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ServerController.cpp" />
     <ClCompile Include="ServerSocket.cpp" />
   </ItemGroup>
   <ItemGroup>

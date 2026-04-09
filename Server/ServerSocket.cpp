@@ -29,43 +29,24 @@ ServerSocket::ServerSocket(int port) {
 		closesocket(listenSocket);
 		throw InvalidConnectionStateException("Error occured when listening on listenSocket");
 	}
-
-	// Set flag so acceptLoop begins accepting client connections
-	isRunning = true;
-
-	// Pass private accept loop the be run in new thread
-	acceptThread = std::thread(&ServerSocket::acceptLoop, this);
 }
 
-ServerSocket::~ServerSocket() {
-	isRunning = false; // Stop client connection loop
+ClientSocket ServerSocket::acceptConnection() const {
+	sockaddr_in clientAddress{};
+	int addressLength = sizeof(clientAddress);
 
-	// Close listening socket
+	SOCKET clientSocket = accept(listenSocket, reinterpret_cast<sockaddr*>(&clientAddress), &addressLength);
+
+	if (clientSocket == INVALID_SOCKET) {
+		throw InvalidConnectionStateException("Error occured when accepting client connection");
+	}
+
+	return ClientSocket(clientSocket);
+}
+
+void ServerSocket::close() {
 	if (listenSocket != INVALID_SOCKET) {
 		closesocket(listenSocket);
 		listenSocket = INVALID_SOCKET;
-	}
-
-	if (acceptThread.joinable()) acceptThread.join();
-
-	for (auto& thread : clientThreads)
-		if (thread.joinable()) thread.join();
-}
-
-void ServerSocket::acceptLoop() {
-	while (isRunning) {
-		sockaddr_in clientAddress{};
-		int addressLength = sizeof(clientAddress);
-
-		SOCKET clientSocket = accept(listenSocket, reinterpret_cast<sockaddr*>(&clientAddress), &addressLength);
-		if (clientSocket == INVALID_SOCKET) {
-			throw InvalidConnectionStateException("Error occured when accepting client connection");
-		}
-
-		clientThreads.emplace_back([this, clientSocket]() {
-			ClientSocket connection(clientSocket);
-			handler(connection);
-		});
-
 	}
 }
