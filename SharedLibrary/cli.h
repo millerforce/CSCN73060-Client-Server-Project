@@ -27,4 +27,4 @@ std::string getIp(const Args& args, std::string defaultIp = "127.0.0.1");
 // Returns the value of the specified argument from the map, or a default value if not found.
 int getPort(const Args& args, int defaultPort = 23500);
 
-std::string getDir(const Args& args, std::string defaultDir = "./data");
+std::string getDir(const Args& args, std::string defaultDir = "./data/");

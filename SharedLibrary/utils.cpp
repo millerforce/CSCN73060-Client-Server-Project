@@ -4,6 +4,7 @@
 #include <cstdio>
 
 #include "utils.h"
+#include "Packet.h"
 
 int stringToEpochDateTime(const std::string& dateTimeStr) {
     int month;
@@ -81,4 +82,39 @@ std::string epochDateTimeToString(int epoch) {
         hourMinuteSecond.minutes().count(),
         hourMinuteSecond.seconds().count()
     );
+}
+
+void trim(std::string& s) {
+    // Trim from the right
+    s.erase(std::find_if(s.rbegin(), s.rend(),
+        [](unsigned char c) { return !std::isspace(c); }).base(), s.end());
+
+    // Trim from the left
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(),
+        [](unsigned char c) { return !std::isspace(c); }));
+}
+
+Packet parseTelemLineToPacket(UUID_T clientId, const std::string& telem) {
+    std::string telmetryData = telem;
+    // Example:
+    // 1_3_2023 12:35:34,33.571247,
+
+    // Remove any whitespace
+    trim(telmetryData);
+
+    // Split data/time and fuel
+    size_t pos = telmetryData.find(',');
+    if (pos == std::string::npos) {
+        throw std::invalid_argument("No comma found in: " + telmetryData);
+    }
+
+    std::string dataTimeString = telmetryData.substr(0, pos);
+    std::string fuelFloatString = telmetryData.substr(pos + 1);
+
+    // Parse fuel to float
+    float fuelData = std::stof(fuelFloatString);
+    // Parse date time to epoch string
+    int epochDateTime = stringToEpochDateTime(dataTimeString);
+
+    return Packet(clientId, epochDateTime, fuelData);
 }
