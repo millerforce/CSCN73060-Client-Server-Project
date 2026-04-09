@@ -7,18 +7,18 @@
 #include <array>
 #include <string>
 
-class UUID {
+class UUID_T {
 public:
-    // Default: generate random UUID (v4)
-    UUID() {
+    // Default: generate random UUID_T (v4)
+    UUID_T() {
         generate();
     }
 
     // Construct from raw bytes
-    explicit UUID(const std::array<uint8_t, 16>& bytes) : bytes_arr(bytes) {}
+    explicit UUID_T(const std::array<uint8_t, 16>& bytes) : bytes_arr(bytes) {}
 
     // Construct from string
-    explicit UUID(const std::string& str) {
+    explicit UUID_T(const std::string& str) {
         fromString(str);
     }
 
@@ -29,10 +29,10 @@ public:
     std::string toString() const;
 
     // Static factory from string
-    static UUID fromStringStatic(const std::string& str);
+    static UUID_T fromStringStatic(const std::string& str);
 
     // Static factory from bytes
-    static UUID fromBytes(const std::array<uint8_t, 16>& bytes);
+    static UUID_T fromBytes(const std::array<uint8_t, 16>& bytes);
 
 private:
     std::array<uint8_t, 16> bytes_arr;

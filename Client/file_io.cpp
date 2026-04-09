@@ -31,19 +31,19 @@ std::vector<std::string> readFile(const std::string& filename) {
     return lines;
 }
 
-std::string getRandomTelemFilename() {
+std::string getRandomTelemFilename(const std::string& directory) {
     namespace fs = std::filesystem;
 
     std::vector<std::string> txtFiles;
 
-    for (const auto& entry : fs::directory_iterator("./data")) {
+    for (const auto& entry : fs::directory_iterator(directory)) {
         if (entry.is_regular_file() && entry.path().extension() == ".txt") {
             txtFiles.push_back(entry.path().filename().string());
         }
     }
 
     if (txtFiles.empty()) {
-        throw std::runtime_error("No .txt files found in ./data");
+        throw std::runtime_error("No .txt files found in " + directory);
     }
 
     std::random_device rd;

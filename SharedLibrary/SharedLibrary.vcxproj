@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="cli.h" />
     <ClInclude Include="ClientSocket.h" />
     <ClInclude Include="InvalidConnectionState.h" />
     <ClInclude Include="InvalidConnectionType.h" />
@@ -27,6 +28,7 @@
     <ClInclude Include="UUID.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="cli.cpp" />
     <ClCompile Include="ClientSocket.cpp" />
     <ClCompile Include="UUID.cpp" />
   </ItemGroup>
@@ -54,13 +56,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v145</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v145</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
