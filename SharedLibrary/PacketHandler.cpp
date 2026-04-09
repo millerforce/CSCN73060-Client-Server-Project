@@ -3,13 +3,12 @@
 
 #include "PacketHandler.h"
 
-uint16_t PacketHandler::calculateCRC(SocketBuffer& buffer) {
-	if (!buffer.has_value()) return 0; // If optional is null then return 0
+uint16_t PacketHandler::calculateCRC(std::vector<char>& buffer) {
 
 	uint16_t total = 0;
 
 	// Loop through each byte and add the number of 1 bits to the total
-	for (unsigned char byte : buffer.value()) {
+	for (unsigned char byte : buffer) {
 		total += std::popcount(byte);
 	}
 
@@ -26,9 +25,6 @@ void PacketHandler::appendBytes(std::vector<char>& buffer, const T& value) {
 }
 
 SocketBuffer PacketHandler::serialize(Packet& packet) {
-	// Confirm a fully formed packet has been passed
-	if (!packet.validate()) return std::nullopt;
-
 	std::vector<char> buffer; // Buffer to populate
 
 	// Copy UUID
@@ -41,5 +37,47 @@ SocketBuffer PacketHandler::serialize(Packet& packet) {
 	// Copy fuel level
 	appendBytes(buffer, packet.fuel);
 
+	packet.crc = calculateCRC(buffer);
+	appendBytes(buffer, packet.crc);
 
+	return buffer;
+}
+
+std::optional<Packet> PacketHandler::deserialize(SocketBuffer& buffer) {
+	if (buffer.size() != PACKET_SIZE) return std::nullopt;
+
+	size_t offset = 0;
+
+	// Copy first 16 bytes for clientId
+	std::array<uint8_t, UUID_SIZE> uuidBytes;
+	std::copy(buffer.begin(), buffer.begin() + UUID_SIZE, uuidBytes.begin());
+	offset += UUID_SIZE;
+	UUID_T clientId(uuidBytes);
+
+	// Copy next 4 bytes for dateTime
+	int dateTime;
+	std::memcpy(&dateTime, buffer.data() + offset, sizeof(int));
+	offset += sizeof(int);
+
+	// Copy next 4 bytes for fuel
+	float fuel;
+	std:memcpy(&fuel, buffer.data() + offset, sizeof(float));
+	offset += sizeof(float);
+
+	// Copy CRC
+	uint16_t crc;
+	std::memcpy(&crc, buffer.data() + offset, sizeof(uint16_t));
+
+	// Create a copy of the original buffer without the crc value to compare against
+	SocketBuffer compareBuffer(buffer.begin(), buffer.end() - sizeof(uint16_t));
+
+	if (!checkCRC(compareBuffer, crc)) return std::nullopt;
+
+	return Packet(clientId, dateTime, fuel, crc);
+}
+
+bool PacketHandler::checkCRC(SocketBuffer& buffer, uint16_t crc) {
+	uint16_t bufferCRC = calculateCRC(buffer);// Calculate the number of 1s within the provided buffer
+
+	return bufferCRC == crc;
 }

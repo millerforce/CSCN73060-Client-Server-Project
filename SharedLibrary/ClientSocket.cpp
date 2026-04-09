@@ -21,7 +21,7 @@ ClientSocket::ClientSocket(const std::string& IPAddr, int port) {
 	}
 }
 
-SocketBuffer ClientSocket::receive(int size) const {
+std::optional<SocketBuffer> ClientSocket::receive(int size) const {
 	std::vector<char> buffer(size);
 
 	// Attempt to read provided max number of bytes
@@ -34,11 +34,7 @@ SocketBuffer ClientSocket::receive(int size) const {
 	return buffer;
 }
 
-int ClientSocket::send(const SocketBuffer& data) const {
-	if (!data) return 0;
-
-	const auto& buffer = *data;
-
+int ClientSocket::send(const SocketBuffer& buffer) const {
 	return ::send(connectionSocket, buffer.data(), static_cast<int>(buffer.size()), 0);
 }
 

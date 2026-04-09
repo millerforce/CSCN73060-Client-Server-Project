@@ -26,5 +26,8 @@
     <ClInclude Include="ServerSocket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ServerController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

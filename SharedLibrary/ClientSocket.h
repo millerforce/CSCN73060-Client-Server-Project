@@ -6,8 +6,8 @@
 #include <optional>
 #include <string>
 
-// Alias for an optional byte buffer to simplify functions
-using SocketBuffer = std::optional<std::vector<char>>;
+// Alias for a byte buffer to simplify functions
+using SocketBuffer = std::vector<char>;
 
 // Abstraction for a TCP socket with methods for sending and receiving data
 class ClientSocket {
@@ -18,8 +18,8 @@ public:
 	ClientSocket(SOCKET socket) : connectionSocket(socket) {} // Create object with existing socket
 	ClientSocket(const std::string& IPAddr, int port); // Create object with new socket
 
-	SocketBuffer receive(int size) const; // Receive provided number of bytes and return data in a SocketBuffer
-	int send(const SocketBuffer& data) const; // Send data from provided buffer
+	std::optional<SocketBuffer> receive(int size) const; // Receive provided number of bytes and return data in a SocketBuffer
+	int send(const SocketBuffer& buffer) const; // Send data from provided buffer
 
 	void close(); // Close the contained socket
 	bool isConnected() const; // Get whether the socket is currently connected or not
