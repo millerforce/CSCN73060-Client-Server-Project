@@ -12,19 +12,20 @@
 
 #include "UUID.h"
 
-const std::array<uint8_t, 16>& UUID::bytes() const {
+
+const std::array<uint8_t, 16>& UUID_T::bytes() const {
     return bytes_arr;
 }
 
-UUID UUID::fromBytes(const std::array<uint8_t, 16>& bytes) {
-    return UUID(bytes);
+UUID_T UUID_T::fromBytes(const std::array<uint8_t, 16>& bytes) {
+    return UUID_T(bytes);
 }
 
-UUID UUID::fromStringStatic(const std::string& str) {
-    return UUID(str);
+UUID_T UUID_T::fromStringStatic(const std::string& str) {
+    return UUID_T(str);
 }
 
-std::string UUID::toString() const {
+std::string UUID_T::toString() const {
     std::ostringstream oss;
     for (size_t i = 0; i < bytes_arr.size(); ++i) {
         if (i == 4 || i == 6 || i == 8 || i == 10)
@@ -36,7 +37,7 @@ std::string UUID::toString() const {
     return oss.str();
 }
 
-void UUID::generate() {
+void UUID_T::generate() {
     static std::random_device rd;
     static std::mt19937 gen(rd());
     static std::uniform_int_distribution<uint32_t> dist(0, 0xFFFFFFFF);
@@ -63,7 +64,7 @@ static uint8_t hexCharToInt(char c) {
     throw std::invalid_argument("Invalid hex character in UUID");
 }
 
-void UUID::fromString(const std::string& str) {
+void UUID_T::fromString(const std::string& str) {
     std::string hex;
     for (char c : str) {
         if (c != '-') hex += c;

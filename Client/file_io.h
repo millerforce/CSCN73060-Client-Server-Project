@@ -5,4 +5,4 @@
 
 std::vector<std::string> readFile(const std::string& filename);
 
-std::string getRandomTelemFilename();
+std::string getRandomTelemFilename(const std::string& directory);

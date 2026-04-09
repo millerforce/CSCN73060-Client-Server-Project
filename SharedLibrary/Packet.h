@@ -6,7 +6,7 @@
 
 // Represents a deserialized data packet that is sent between the client and server
 struct Packet {
-	::UUID clientId; // The clients unique identifier
+	UUID_T clientId; // The clients unique identifier
 	int dateTime; // The unix timestamp
 	float fuel;
 	uint16_t crc;
