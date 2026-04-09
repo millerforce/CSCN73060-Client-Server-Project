@@ -14,5 +14,3 @@ public:
         return message.c_str();
     }
 };
-
-

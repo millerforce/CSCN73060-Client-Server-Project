@@ -25,6 +25,7 @@
     <ClInclude Include="InvalidConnectionType.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="PacketHandler.h" />
+    <ClInclude Include="utils.h" />
     <ClInclude Include="UUID.h" />
   </ItemGroup>
   <ItemGroup>
@@ -32,6 +33,7 @@
     <ClCompile Include="ClientSocket.cpp" />
     <ClCompile Include="Packet.cpp" />
     <ClCompile Include="PacketHandler.cpp" />
+    <ClCompile Include="utils.cpp" />
     <ClCompile Include="UUID.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
