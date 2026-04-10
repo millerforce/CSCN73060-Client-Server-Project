@@ -20,7 +20,10 @@ void clientFunc(ClientSocket& socket) {
 			std::optional<Packet> pkt = PacketHandler::deserialize(buffer.value());
 
 			if (pkt.has_value()) {
-				std::cout << "Packet received" << std::endl;
+				#ifdef _DEBUG
+					std::cout << "Packet received" << std::endl;
+				#endif // DEBUG
+				
 				writer.processPacket(pkt.value());
 			}
 			else {
