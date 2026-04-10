@@ -11,24 +11,24 @@
 
 int main(int argc, char* argv[]) {
 	Args args = parseArgs(argc, argv);
-	int port = getPort(args, 9000);
-	std::string ipAddress = getIp(args, "10.144.114.34");
+	int port = getPort(args);
+	std::string ipAddress = getIp(args);
 	std::string telemDir = getDir(args);
 
-	std::cout << port << std::endl;
-	std::cout << ipAddress << std::endl;
 
 	std::string telmFile = getRandomTelemFilename(telemDir);
 	std::vector<std::string> telemetryData = readFile(telemDir + telmFile);
 
 	UUID_T clientId;
+	std::cout << "Initalizing Client: " << clientId.toString() << std::endl;
 
 	WSADATA wsaData;
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-		std::cerr << "WSAStartup failed: " << WSAGetLastError() << "\n";
+		std::cerr << "WSAStartup failed: " << WSAGetLastError() << std::endl;
 		return 1;
 	}
 
+	std::cout << "Connecting to: " << ipAddress << ":" << port << std::endl;
 	ClientSocket socket(ipAddress, port);
 	if (socket.isConnected()) {
 		std::cout << "Connected to Server" << std::endl;
@@ -46,6 +46,7 @@ int main(int argc, char* argv[]) {
 		std::cout << "Packet Sent: " << packet.clientId.toString() << " " << packet.fuel << " " << packet.dateTime << std::endl;
 		Sleep(1000);
 	}
+	std::cout << "All telemtry data sent." << std::endl;
 
 	socket.close();
 	WSACleanup();
