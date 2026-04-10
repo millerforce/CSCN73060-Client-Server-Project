@@ -24,12 +24,18 @@
     <ClCompile Include="ServerController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TelemetryWriter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ServerSocket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ServerController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TelemetryWriter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

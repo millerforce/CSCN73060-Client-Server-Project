@@ -1,6 +1,5 @@
 
 #include "ClientSocket.h"
-
 #include "InvalidConnectionState.h"
 
 ClientSocket::ClientSocket(const std::string& IPAddr, int port) {
@@ -19,16 +18,24 @@ ClientSocket::ClientSocket(const std::string& IPAddr, int port) {
 		closesocket(connectionSocket);
 		throw InvalidConnectionStateException("Error occured, unable to connect to server");
 	}
+
+	connected = true;
 }
 
-std::optional<SocketBuffer> ClientSocket::receive(int size) const {
+std::optional<SocketBuffer> ClientSocket::receive(int size) {
 	std::vector<char> buffer(size);
 
 	// Attempt to read provided max number of bytes
 	int bytesRead = recv(connectionSocket, buffer.data(), size, 0);
 
-	// If nothing was read then return a null optional
-	if (bytesRead <= 0) return std::nullopt;
+	// If nothing was read then return a null optional and set connected to false
+	if (bytesRead <= 0) {
+		if (bytesRead < 0) std::osyncstream(std::cout) << "ClientSocket read " << bytesRead << " bytes indicating unexpected client disconnect" << std::endl;
+		else std::osyncstream(std::cout) << "ClientSocket read " << bytesRead << " indicating graceful client disconnection" << std::endl;
+
+		connected = false;
+		return std::nullopt;
+	}
 
 	buffer.resize(bytesRead); // Resize to the number of bytes read
 	return buffer;
@@ -46,5 +53,13 @@ void ClientSocket::close() {
 }
 
 bool ClientSocket::isConnected() const {
-	return connectionSocket != INVALID_SOCKET;
+	return connected;
+}
+
+bool ClientSocket::setSocketTimeout(int timeoutSeconds) {
+	if (connectionSocket == INVALID_SOCKET || timeoutSeconds < 0) return false;
+
+	int timeoutMs = timeoutSeconds * 1000;
+
+	return setsockopt(connectionSocket, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<const char*>(&timeoutMs), sizeof(timeoutMs)) == 0;
 }

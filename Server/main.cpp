@@ -1,17 +1,27 @@
 
 #include <iostream>
+
 #include "ServerController.h"
 #include "PacketHandler.h"
+#include "utils.h"
+#include "TelemetryWriter.h"
+
+#define CLIENT_TIMEOUT 5
 
 void clientFunc(ClientSocket& socket) {
-	while (true) {
+	TelemetryWriter writer;
+
+	socket.setSocketTimeout(CLIENT_TIMEOUT);
+
+	while (socket.isConnected()) {
 		std::optional<SocketBuffer> buffer = socket.receive(26);
 
 		if (buffer.has_value()) {
 			std::optional<Packet> pkt = PacketHandler::deserialize(buffer.value());
 
 			if (pkt.has_value()) {
-				std::cout << "UUID: " << pkt.value().clientId.toString() << " DateTime: " << pkt.value().dateTime << " Fuel: " << pkt.value().fuel << std::endl;
+				std::cout << "Packet received" << std::endl;
+				writer.processPacket(pkt.value());
 			}
 			else {
 				std::cerr << "Failed to parse packet" << std::endl;
@@ -21,6 +31,13 @@ void clientFunc(ClientSocket& socket) {
 			std::cerr << "Failed to receive from client" << std::endl;
 		}
 	}
+
+	bool result = writer.close();
+
+	if (result) std::cout << "Client flight ended successfully" << std::endl;
+	else std::cerr << "Client flight failed to end successfully" << std::endl;
+
+	return;
 }
 
 int main(void) {

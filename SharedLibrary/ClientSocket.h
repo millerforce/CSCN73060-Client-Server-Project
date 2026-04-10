@@ -6,6 +6,8 @@
 #include <vector>
 #include <optional>
 #include <string>
+#include <syncstream>
+#include <iostream>
 
 // Alias for a byte buffer to simplify functions
 using SocketBuffer = std::vector<char>;
@@ -14,14 +16,17 @@ using SocketBuffer = std::vector<char>;
 class ClientSocket {
 private:
 	SOCKET connectionSocket;
+	bool connected;
 
 public:
-	ClientSocket(SOCKET socket) : connectionSocket(socket) {} // Create object with existing socket
+	ClientSocket(SOCKET socket) : connectionSocket(socket), connected(true) {} // Create object with existing socket
 	ClientSocket(const std::string& IPAddr, int port); // Create object with new socket
 
-	std::optional<SocketBuffer> receive(int size) const; // Receive provided number of bytes and return data in a SocketBuffer
+	std::optional<SocketBuffer> receive(int size); // Receive provided number of bytes and return data in a SocketBuffer
 	int send(const SocketBuffer& buffer) const; // Send data from provided buffer
 
 	void close(); // Close the contained socket
 	bool isConnected() const; // Get whether the socket is currently connected or not
+
+	bool setSocketTimeout(int timeoutSeconds);
 };

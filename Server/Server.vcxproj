@@ -105,7 +105,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)SharedLibrary;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)SharedLibrary;%(AdditionalIncludeDirectories);$(SolutionDir)SharedLibrary</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -120,6 +120,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>;$(SolutionDir)SharedLibrary</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -132,6 +134,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ServerController.cpp" />
     <ClCompile Include="ServerSocket.cpp" />
+    <ClCompile Include="TelemetryWriter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SharedLibrary\SharedLibrary.vcxproj">
@@ -141,6 +144,7 @@
   <ItemGroup>
     <ClInclude Include="ServerController.h" />
     <ClInclude Include="ServerSocket.h" />
+    <ClInclude Include="TelemetryWriter.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
