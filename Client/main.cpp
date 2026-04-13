@@ -14,6 +14,7 @@ int main(int argc, char* argv[]) {
 	int port = getPort(args, 9000);
 	std::string ipAddress = getIp(args, "10.192.85.191");
 	std::string telemDir = getDir(args, "../../Client/data/");
+	//std::string telemDir = getDir(args, "./data/");
 
 	std::string telmFile = getRandomTelemFilename(telemDir);
 	std::vector<std::string> telemetryData = readFile(telemDir + telmFile);
@@ -48,8 +49,9 @@ int main(int argc, char* argv[]) {
 		}
 		else {
 			std::cout << "Failed to send packet: " << sent << std::endl;
+			std::cout << "Error: " << WSAGetLastError() << std::endl;
 		}
-		Sleep(1000);
+		Sleep(100);
 	}
 	std::cout << "All telemtry data sent." << std::endl;
 
