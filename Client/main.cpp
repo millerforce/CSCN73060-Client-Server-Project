@@ -42,11 +42,12 @@ int main(int argc, char* argv[]) {
 	while (!telemetryData.empty()) {
 		Packet packet = parseTelemLineToPacket(clientId, telemetryData[0]);
 		telemetryData.erase(telemetryData.begin());
-		if (socket.send(PacketHandler::serialize(packet)) > 0) {
+		int sent = socket.send(PacketHandler::serialize(packet));
+		if (sent > 0) {
 			std::cout << "Packet Sent: " << packet.clientId.toString() << " " << packet.fuel << " " << packet.dateTime << std::endl;
 		}
 		else {
-			std::cout << "Failed to send packet" << std::endl;
+			std::cout << "Failed to send packet: " << sent << std::endl;
 		}
 		Sleep(1000);
 	}
