@@ -12,7 +12,7 @@
 int main(int argc, char* argv[]) {
 	Args args = parseArgs(argc, argv);
 	int port = getPort(args, 9000);
-	std::string ipAddress = getIp(args, "10.192.75.217");
+	std::string ipAddress = getIp(args, "10.192.75.16");
 	std::string telemDir = getDir(args, "../../Client/data/");
 
 	std::string telmFile = getRandomTelemFilename(telemDir);

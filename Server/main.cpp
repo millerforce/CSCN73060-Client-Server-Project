@@ -8,7 +8,7 @@
 
 #define CLIENT_TIMEOUT 5
 
-void clientFunc(ClientSocket& socket) {
+static void clientFunc(ClientSocket& socket) {
 	TelemetryWriter writer;
 
 	socket.setSocketTimeout(CLIENT_TIMEOUT);
