@@ -12,7 +12,7 @@
 int main(int argc, char* argv[]) {
 	Args args = parseArgs(argc, argv);
 	int port = getPort(args, 9000);
-	std::string ipAddress = getIp(args, "10.192.75.16");
+	std::string ipAddress = getIp(args, "10.192.85.191");
 	std::string telemDir = getDir(args, "../../Client/data/");
 
 	std::string telmFile = getRandomTelemFilename(telemDir);
@@ -42,8 +42,12 @@ int main(int argc, char* argv[]) {
 	while (!telemetryData.empty()) {
 		Packet packet = parseTelemLineToPacket(clientId, telemetryData[0]);
 		telemetryData.erase(telemetryData.begin());
-		socket.send(PacketHandler::serialize(packet));
-		std::cout << "Packet Sent: " << packet.clientId.toString() << " " << packet.fuel << " " << packet.dateTime << std::endl;
+		if (socket.send(PacketHandler::serialize(packet)) > 0) {
+			std::cout << "Packet Sent: " << packet.clientId.toString() << " " << packet.fuel << " " << packet.dateTime << std::endl;
+		}
+		else {
+			std::cout << "Failed to send packet" << std::endl;
+		}
 		Sleep(1000);
 	}
 	std::cout << "All telemtry data sent." << std::endl;
