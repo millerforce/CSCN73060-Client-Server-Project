@@ -6,7 +6,7 @@
 #include "utils.h"
 #include "TelemetryWriter.h"
 
-#define CLIENT_TIMEOUT 5
+#define CLIENT_TIMEOUT 15
 
 static void clientFunc(ClientSocket& socket) {
 	TelemetryWriter writer;
