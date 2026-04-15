@@ -12,13 +12,14 @@
 int main(int argc, char* argv[]) {
 	Args args = parseArgs(argc, argv);
 	int port = getPort(args, 9000);
-	std::string ipAddress = getIp(args, "10.144.114.53");
+	std::string ipAddress = getIp(args, "192.168.1.44");
 	std::string telemDir = getDir(args, "../../Client/data/");
 	//std::string telemDir = getDir(args, "./data/");
 
 	std::string telmFile = getRandomTelemFilename(telemDir);
-	std::vector<std::string> telemetryData = readFile(telemDir + telmFile);
+	//std::vector<std::string> telemetryData = readFile(telemDir + telmFile);
 	//std::vector<std::string> telemetryData = readFile("../../test.txt");
+	std::vector<std::string> telemetryData = readFile(telemDir + "katl-kefd-B737-700.txt");
 
 	UUID_T clientId;
 	std::cout << "Initalizing Client: " << clientId.toString() << std::endl;

@@ -6,6 +6,18 @@
 #include <string>
 #include <filesystem>
 
+void TelemetryWriter::addConsumption(float fuelLevel) {
+	// If we have a fuel value from a previous packet then we add the difference between the two
+	// to the total consumed fuel
+	if (currentFuelLevel > 0) {
+		totalFuelConsumption += currentFuelLevel - fuelLevel;
+		consumptionCount++; // Increment counter
+	}
+
+	// Update current known level to new level
+	currentFuelLevel = fuelLevel;
+}
+
 void TelemetryWriter::processPacket(const Packet& packet) {
 	// If this is the first packet then store clientId
 	if (!clientId.has_value()) {
@@ -20,34 +32,17 @@ void TelemetryWriter::processPacket(const Packet& packet) {
 	// Set most recent time to new packet
 	mostRecentTime = packet.dateTime;
 
-	// If we have a fuel value from a previous packet then we add the difference between the two
-	// to the total consumed fuel
-	if (currentFuelLevel > 0) {
-		float fuelConsumed = currentFuelLevel - packet.fuel;
-		fuelConsumptions.push_back(fuelConsumed);
-	}
+	addConsumption(packet.fuel);
 
-	// After storing fuel consumption we set the new fuel level
-	currentFuelLevel = packet.fuel;
+	return;
 }
 
-float TelemetryWriter::getTotalConsumption() {
-	float total = 0;
-
-	// Add up all the stored consumptions
-	for (float c : fuelConsumptions) {
-		total += c;
-	}
-
-	return total;
+float TelemetryWriter::getTotalConsumption() const {
+	return totalFuelConsumption;
 }
 
-float TelemetryWriter::getAverageConsumption() {
-	if (fuelConsumptions.empty()) return 0.0f;
-	
-	float total = getTotalConsumption();
-	
-	return total / fuelConsumptions.size();
+float TelemetryWriter::getAverageConsumption() const {
+	return getTotalConsumption() / consumptionCount;
 }
 
 bool TelemetryWriter::close() {
