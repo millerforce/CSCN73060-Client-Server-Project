@@ -5,6 +5,8 @@
 #include <fstream>
 #include <string>
 #include <filesystem>
+#include <iostream>
+#include <syncstream>
 
 void TelemetryWriter::addConsumption(float fuelLevel) {
 	// If we have a fuel value from a previous packet then we add the difference between the two
@@ -47,7 +49,10 @@ float TelemetryWriter::getAverageConsumption() const {
 
 bool TelemetryWriter::close() {
 	// Early fail if a packet was never received
-	if (!clientId.has_value()) return false;
+	if (!clientId.has_value()) {
+		std::osyncstream(std::cerr) << "Failed to end flight as no clientId was stored" << std::endl;
+		return false;
+	}
 
 	std::filesystem::create_directories("./flights");
 
@@ -56,7 +61,10 @@ bool TelemetryWriter::close() {
 	std::ofstream flightFile;
 	flightFile.open(fileName);
 
-	if (!flightFile.is_open()) return false;
+	if (!flightFile.is_open()) {
+		std::osyncstream(std::cerr) << "Failed to open file for flight: " << clientId.value().toString() << std::endl;
+		return false;
+	}
 
 	flightFile << "Flight ID: " << clientId.value().toString() << std::endl;
 	flightFile << "Started at: " << epochDateTimeToString(startTime) << std::endl;

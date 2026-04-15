@@ -6,42 +6,38 @@
 #include "utils.h"
 #include "TelemetryWriter.h"
 
-#define CLIENT_TIMEOUT 15
+constexpr int CLIENT_TIMEOUT = 15;
 
 static void clientFunc(ClientSocket& socket) {
 	TelemetryWriter writer;
 
 	socket.setSocketTimeout(CLIENT_TIMEOUT);
 
+	SocketBuffer buffer{};
+	Packet packet;
+
 	while (socket.isConnected()) {
-		std::optional<SocketBuffer> buffer = socket.receive(26);
-
-		if (buffer.has_value()) {
-			std::optional<Packet> pkt = PacketHandler::deserialize(buffer.value());
-
-			if (pkt.has_value()) {
-				#ifdef _DEBUG
-					std::cout << "Packet received" << std::endl;
-				#endif // DEBUG
-				
-				writer.processPacket(pkt.value());
-			}
-			else {
-				std::cerr << "Failed to parse packet" << std::endl;
-			}
+		if (!socket.receive(buffer.data(), PACKET_SIZE)) {
+			std::osyncstream(std::cerr) << "Failed to receive from client, WSA Error: " << WSAGetLastError() << std::endl;
+			break;
 		}
-		else {
-			std::cerr << "Failed to receive from client" << std::endl;
-			std::cerr << "Error: " << WSAGetLastError() << std::endl;
 
-			break; // Early exit from loop if the client connection failed
+		#ifdef _DEBUG
+			std::osyncstream(std::cout) << "Packet received" << std::endl;
+		#endif // DEBUG
+
+		if (!PacketHandler::deserialize(packet, buffer)) {
+			std::osyncstream(std::cerr) << "Failed to parse packet" << std::endl;
+			break;
 		}
+
+		writer.processPacket(packet);
 	}
 
 	bool result = writer.close();
 
-	if (result) std::cout << "Client flight ended successfully" << std::endl;
-	else std::cerr << "Client flight ended unsuccessfully" << std::endl;
+	if (result) std::osyncstream(std::cout) << "Client flight ended successfully" << std::endl;
+	else std::osyncstream(std::cout) << "Client flight ended unsuccessfully" << std::endl;
 
 	socket.close(); // Cleanup socket
 

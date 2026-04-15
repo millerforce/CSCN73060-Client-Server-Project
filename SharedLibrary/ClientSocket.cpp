@@ -22,23 +22,25 @@ ClientSocket::ClientSocket(const std::string& IPAddr, int port) {
 	connected = true;
 }
 
-std::optional<SocketBuffer> ClientSocket::receive(int size) {
-	std::vector<char> buffer(size);
+bool ClientSocket::receive(char* buffer, int size) {
+	//std::vector<char> buffer(size);
 
 	// Attempt to read provided max number of bytes
-	int bytesRead = recv(connectionSocket, buffer.data(), size, 0);
+	int bytesRead = recv(connectionSocket, buffer, size, 0);
 
 	// If nothing was read then return a null optional and set connected to false
 	if (bytesRead <= 0) {
-		if (bytesRead < 0) std::osyncstream(std::cout) << "ClientSocket read " << bytesRead << " bytes indicating unexpected client disconnect" << std::endl;
-		else std::osyncstream(std::cout) << "ClientSocket read " << bytesRead << " indicating graceful client disconnection" << std::endl;
+		if (bytesRead < 0)
+			std::osyncstream(std::cout) << "ClientSocket read " << bytesRead << " bytes indicating unexpected client disconnect" << std::endl;
+		else
+			std::osyncstream(std::cout) << "ClientSocket read " << bytesRead << " indicating graceful client disconnection" << std::endl;
 
 		connected = false;
-		return std::nullopt;
+		return false;
 	}
 
-	buffer.resize(bytesRead); // Resize to the number of bytes read
-	return buffer;
+	// buffer.resize(bytesRead); // Resize to the number of bytes read
+	return true;
 }
 
 int ClientSocket::send(const SocketBuffer& buffer) const {
@@ -56,7 +58,7 @@ bool ClientSocket::isConnected() const {
 	return connected;
 }
 
-bool ClientSocket::setSocketTimeout(int timeoutSeconds) {
+bool ClientSocket::setSocketTimeout(int timeoutSeconds) const {
 	if (connectionSocket == INVALID_SOCKET || timeoutSeconds < 0) return false;
 
 	int timeoutMs = timeoutSeconds * 1000;

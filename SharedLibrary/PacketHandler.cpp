@@ -3,81 +3,89 @@
 
 #include "PacketHandler.h"
 
-uint16_t PacketHandler::calculateCRC(std::vector<char>& buffer) {
-
+uint16_t PacketHandler::calculateCRC(const SocketBuffer& buffer, size_t length) {
 	uint16_t total = 0;
 
-	// Loop through each byte and add the number of 1 bits to the total
-	for (unsigned char byte : buffer) {
-		total += std::popcount(byte);
+	// Loop through the desired number of bytes and add the number of 1 bits to the total
+	for (size_t i = 0; i < length; ++i) {
+		total += std::popcount(static_cast<unsigned char>(buffer[i]));
 	}
 
 	return total;
 }
 
 template<typename T>
-void PacketHandler::appendBytes(std::vector<char>& buffer, const T& value) {
+void PacketHandler::appendBytes(const T& value, SocketBuffer& buffer, size_t offset) {
 	// Create a pointer to the values memory
 	const char* pointer = reinterpret_cast<const char*>(&value);
 
 	// Append to buffer
-	buffer.insert(buffer.end(), pointer, pointer + sizeof(T));
+	std::memcpy(buffer.data() + offset, pointer, sizeof(T));
+}
+
+template<typename T>
+void PacketHandler::readBytes(T& value, const SocketBuffer& buffer, size_t offset) {
+	std::memcpy(&value, buffer.data() + offset, sizeof(T));
 }
 
 SocketBuffer PacketHandler::serialize(Packet& packet) {
-	std::vector<char> buffer; // Buffer to populate
+	SocketBuffer buffer{}; // Buffer to populate
+	size_t offset = 0;
 
 	// Copy UUID
 	auto& clientIdBuf = packet.clientId.bytes();
-	buffer.insert(buffer.end(), clientIdBuf.begin(), clientIdBuf.end());
+	std::memcpy(buffer.data() + offset, clientIdBuf.data(), clientIdBuf.size());
+	offset += clientIdBuf.size();
 
 	// Copy timestamp
-	appendBytes(buffer, packet.dateTime);
+	appendBytes(packet.dateTime, buffer, offset);
+	offset += sizeof(packet.dateTime);
 
 	// Copy fuel level
-	appendBytes(buffer, packet.fuel);
+	appendBytes(packet.fuel, buffer, offset);
+	offset += sizeof(packet.fuel);
 
-	packet.crc = calculateCRC(buffer);
-	appendBytes(buffer, packet.crc);
+	packet.crc = calculateCRC(buffer, offset);
+	appendBytes(packet.crc, buffer, offset);
 
 	return buffer;
 }
 
-std::optional<Packet> PacketHandler::deserialize(SocketBuffer& buffer) {
-	if (buffer.size() != PACKET_SIZE) return std::nullopt;
+bool PacketHandler::deserialize(Packet& packet, const SocketBuffer& buffer) {
+	if (buffer.size() != PACKET_SIZE) return false;
 
 	size_t offset = 0;
 
 	// Copy first 16 bytes for clientId
-	std::array<uint8_t, UUID_SIZE> uuidBytes;
-	std::copy(buffer.begin(), buffer.begin() + UUID_SIZE, uuidBytes.begin());
+	std::array<uint8_t, UUID_SIZE> uuidBytes{};
+	std::memcpy(uuidBytes.data(), buffer.data() + offset, UUID_SIZE);
 	offset += UUID_SIZE;
+
 	UUID_T clientId(uuidBytes);
 
 	// Copy next 4 bytes for dateTime
-	int dateTime;
-	std::memcpy(&dateTime, buffer.data() + offset, sizeof(int));
+	int dateTime = 0;
+	readBytes(dateTime, buffer, offset);
 	offset += sizeof(int);
 
 	// Copy next 4 bytes for fuel
-	float fuel;
-	std:memcpy(&fuel, buffer.data() + offset, sizeof(float));
+	float fuel = 0.0f;
+	readBytes(fuel, buffer, offset);
 	offset += sizeof(float);
 
 	// Copy CRC
-	uint16_t crc;
-	std::memcpy(&crc, buffer.data() + offset, sizeof(uint16_t));
+	uint16_t crc = 0;
+	readBytes(crc, buffer, offset);
 
-	// Create a copy of the original buffer without the crc value to compare against
-	SocketBuffer compareBuffer(buffer.begin(), buffer.end() - sizeof(uint16_t));
+	if (!checkCRC(crc, buffer, offset)) return false;
 
-	if (!checkCRC(compareBuffer, crc)) return std::nullopt;
+	packet = Packet(clientId, dateTime, fuel, crc);
 
-	return Packet(clientId, dateTime, fuel, crc);
+	return true;
 }
 
-bool PacketHandler::checkCRC(SocketBuffer& buffer, uint16_t crc) {
-	uint16_t bufferCRC = calculateCRC(buffer);// Calculate the number of 1s within the provided buffer
+bool PacketHandler::checkCRC(uint16_t crc, const SocketBuffer& buffer, size_t length) {
+	uint16_t bufferCRC = calculateCRC(buffer, length);// Calculate the number of 1s within the provided buffer
 
 	return bufferCRC == crc;
 }
