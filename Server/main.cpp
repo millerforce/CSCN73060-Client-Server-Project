@@ -33,6 +33,8 @@ static void clientFunc(ClientSocket& socket) {
 		else {
 			std::cerr << "Failed to receive from client" << std::endl;
 			std::cerr << "Error: " << WSAGetLastError() << std::endl;
+
+			break; // Early exit from loop if the client connection failed
 		}
 	}
 
@@ -40,6 +42,8 @@ static void clientFunc(ClientSocket& socket) {
 
 	if (result) std::cout << "Client flight ended successfully" << std::endl;
 	else std::cerr << "Client flight ended unsuccessfully" << std::endl;
+
+	socket.close(); // Cleanup socket
 
 	return;
 }
