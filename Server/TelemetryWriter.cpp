@@ -44,6 +44,8 @@ float TelemetryWriter::getTotalConsumption() const {
 }
 
 float TelemetryWriter::getAverageConsumption() const {
+	if (consumptionCount == 0) return 0.0f;
+
 	return getTotalConsumption() / consumptionCount;
 }
 
