@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <syncstream>
+#include <algorithm>
 
 void ServerController::start() {
 	isRunning = true; // Set loop flag
@@ -20,7 +21,7 @@ void ServerController::stop() {
 	if (acceptThread.joinable()) acceptThread.join();
 
 	for (auto& client : clientThreads)
-		if (client.thread.joinable()) client.thread.join();
+		if (client.joinable()) client.join();
 }
 
 void ServerController::acceptLoop() {
@@ -31,39 +32,16 @@ void ServerController::acceptLoop() {
 
 			std::osyncstream(std::cout) << "New client connected" << std::endl;
 
-			auto done = std::make_shared<std::atomic<bool>>(false);
-
 			// Pass client into its own thread
-			clientThreads.emplace_back(ClientThread{
-				std::thread([this, client = std::move(client), done]() mutable {
+			clientThreads.emplace_back([this, client = std::move(client)]() mutable {
 				clientHandler(client);
-				*done = true;
-				}),
-				done
 			});
-
-			cleanupThreads();
 		}
 		catch (InvalidConnectionStateException& e) {
 			std::cerr << "Exception caught during accept loop:" << e.what() << std::endl;
 		}
 		
 	}
-}
-
-void ServerController::cleanupThreads() {
-	clientThreads.erase(
-		std::remove_if(clientThreads.begin(), clientThreads.end(),
-			[](ClientThread& client) {
-				if (*client.done) {
-					if (client.thread.joinable())
-						client.thread.join();
-					return true;
-				}
-				return false;
-			}),
-		clientThreads.end()
-		);
 }
 
 std::thread& ServerController::getAcceptThread() {
