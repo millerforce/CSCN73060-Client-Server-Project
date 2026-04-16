@@ -21,8 +21,33 @@ public:
 	ServerController(ServerSocket& socket, ClientHandler& handler) : serverSocket(socket), clientHandler(handler) {}
 	~ServerController() { stop(); };
 
+	/**
+	 * @brief Starts the server controller.
+	 *
+	 * Initializes the server loop and spawns a dedicated thread to accept incoming client connections.
+	 *
+	 * This function is non-blocking; the accept loop runs in a separate thread.
+	 */
 	void start();
+	/**
+	 * @brief Stops the server controller.
+	 *
+	 * Signals the server to stop accepting new connections, closes the server
+	 * socket, and joins all running threads (accept thread and client threads).
+	 *
+	 * This function blocks until all threads have finished execution.
+	*/
 	void stop();
 
+
+	/**
+	 * @brief Main loop for accepting incoming client connections.
+	 *
+	 * Continuously listens for new client connections while the server is running.
+	 * For each accepted connection:
+	 * - Logs the connection event
+	 * - Spawns a new thread to handle the client
+	 *
+	 */
 	std::thread& getAcceptThread();
 };
